@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import re
-from re import Pattern, compile
+from re import Pattern, compile, escape
+from regrex_flag import RegrexFlag
 
 def compile_regrex(f):
     def wrapper(*args, **kwargs):
@@ -21,20 +21,24 @@ def char_from_code(code: int):
     return f'\\x{code}'
 
 @compile_regrex
-def one_char_of(string: str):
-    return f'[{string}]'
+def one_char_of(string: str | Pattern):
+    if isinstance(string, str):
+        string = compile(escape(string))
+    return f'[{string.pattern}]'
 
 @compile_regrex
-def any_char_exept(string: str):
+def any_char_except(string: str | Pattern):
+    if isinstance(string, str):
+        string = compile(escape(string))
     return f'[^{string}]'
 
 @compile_regrex
 def char_in_range(ranges: list[tuple[str, str]]):
-    return f'[{"".join([f"{range[0]}-{range[1]}" for range in ranges])}]'
+    return f'[{"".join([f"{range_str[0]}-{range_str[1]}" for range_str in ranges])}]'
 
 @compile_regrex
 def char_outside_range(ranges: list[tuple[str, str]]):
-    return f'[^{"".join([f"{range[0]}-{range[1]}" for range in ranges])}]'
+    return f'[^{"".join([f"{range_str[0]}-{range_str[1]}" for range_str in ranges])}]'
 
 @compile_regrex
 def new_line():
@@ -152,19 +156,17 @@ def group(pattern: Pattern):
 def named_group(name: str, pattern: Pattern):
     return f"(?P<{name}>{pattern.pattern})"
 
-# TODO: parse flags and add them to inline flags block
 @compile_regrex
 def inline_flags(flags: int):
-    return f"(?)"
+    return f"(?{RegrexFlag.to_flags_string(flags)})"
 
-# TODO: parse flags and add them to localized flags block
 @compile_regrex
 def localized_inline_flags(flags: int, pattern: Pattern):
-    return f"(?flags:{pattern.pattern})"
+    return f"(?{RegrexFlag.to_flags_string(flags)}:{pattern.pattern})"
 
 @compile_regrex
-def conditional_pattern(group: int, true_pattern: Pattern, false_pattern: Pattern):
-    return f"(?({group}){true_pattern.pattern}|{false_pattern.pattern})"
+def conditional_pattern(group_number: int, true_pattern: Pattern, false_pattern: Pattern):
+    return f"(?({group_number}){true_pattern.pattern}|{false_pattern.pattern})"
 
 @compile_regrex
 def sub_pattern_match_name(group_name: str):
@@ -185,4 +187,3 @@ def positive_lookbehind(pattern: Pattern):
 @compile_regrex
 def negative_lookbehind(pattern: Pattern):
     return f'(?<!{pattern.pattern})'
-
