@@ -1,13 +1,13 @@
 import re
 import unittest
 
-from Regrex import Regrex
-from RegrexFlag import RegrexFlag
-from RegrexFunction import whitespace, word_char, combine, many, many1
+from regrex import Regrex
+from regrex_flag import RegrexFlag
+from regrex_function import whitespace, word_char, combine, zero_or_more, one_or_more
 
-class MyTestCase(unittest.TestCase):
+class BasicTestCase(unittest.TestCase):
     def test_basic_regex(self):
-        pattern = combine(many(word_char()), many1(whitespace()))
+        pattern = combine(zero_or_more(word_char()), one_or_more(whitespace()))
         regrex = Regrex(pattern, RegrexFlag.IGNORECASE | RegrexFlag.MULTILINE)
         regex = regrex.compile()
 
@@ -19,6 +19,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(regex.match("t"), None)
         self.assertEqual(regex.match("tsdgfg"), None)
+        self.assertEqual(regex.match(""), None)
 
 if __name__ == '__main__':
     unittest.main()
