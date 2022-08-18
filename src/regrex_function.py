@@ -90,7 +90,7 @@ def backspace_char():
 
 @compile_regrex
 def literal(string: str):
-    return re.escape(string)
+    return escape(string)
 
 @compile_regrex
 def string_start():
