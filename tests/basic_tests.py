@@ -10,18 +10,17 @@ class BasicTestCase(unittest.TestCase):
     def test_basic_regex(self):
         pattern = combine(zero_or_more(word_char()), one_or_more(whitespace()))
         regrex = Regrex(pattern, RegrexFlag.IGNORECASE | RegrexFlag.MULTILINE)
-        regex = regrex.compile()
 
-        self.assertIsInstance(regex.match("testing "), re.Match)
-        self.assertIsInstance(regex.match(" "), re.Match)
-        self.assertIsInstance(regex.match("   "), re.Match)
-        self.assertIsInstance(regex.match("t "), re.Match)
-        self.assertIsInstance(regex.match("t   "), re.Match)
-        self.assertIsInstance(regex.match("test     "), re.Match)
+        self.assertIsInstance(regrex.match("testing "), re.Match)
+        self.assertIsInstance(regrex.match(" "), re.Match)
+        self.assertIsInstance(regrex.match("   "), re.Match)
+        self.assertIsInstance(regrex.match("t "), re.Match)
+        self.assertIsInstance(regrex.match("t   "), re.Match)
+        self.assertIsInstance(regrex.match("test     "), re.Match)
 
-        self.assertEqual(regex.match("t"), None)
-        self.assertEqual(regex.match("testing"), None)
-        self.assertEqual(regex.match(""), None)
+        self.assertEqual(regrex.match("t"), None)
+        self.assertEqual(regrex.match("testing"), None)
+        self.assertEqual(regrex.match(""), None)
 
     def test_basic_flag_to_string_uses(self):
         empty_flag = RegrexFlag.to_flags_string(0)
